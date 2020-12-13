@@ -3,19 +3,17 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>Websocket Javascript Client</title>
+    <title>WebSocket JavaScript Client</title>
 </head>
 
 <body>
-
-    <h1>Websocket Javascript Client</h1>
-
-    <p id="stateLabel">Ready to Connect</p>
-    <p id="connIDLable">ConnId: N/a</p>
+    <h1>WebSocket JavaScript Client</h1>
+    <p id="stateLabel">Ready to connect</p>
+    <p id="connIDLabel">ConnID: N/a</p>
     <div>
-        <label for="connectionUrl">Websocket Server Url:</label>
+        <label for="connectionUrl">WebSocket Server URL:</label>
         <input id="connectionUrl" />
-        <button id="connectionButton" type="submit">Connect</button>
+        <button id="connectButton" type="submit">Connect</button>
         <button id="closeButton" disabled>Close Socket</button>
     </div>
     <p></p>
@@ -26,65 +24,59 @@
     </div>
     <p></p>
     <div>
-        <label for="recipents">Recipent ID:</label>
-        <input id="recipents" disabled>
+        <label for="recipients">Recipient IDs:</label>
+        <input id="recipients" disabled />
     </div>
     <p></p>
     <h2>Communication Log</h2>
-    <table style="width: 800px;">
-
+    <table style="width: 800px">
         <thead>
             <tr>
-                <td style="width: 100px;">From</td>
-                <td style="width: 100px;">To</td>
+                <td style="width: 100px">From</td>
+                <td style="width: 100px">To</td>
                 <td>Data</td>
             </tr>
         </thead>
         <tbody id="commsLog">
-
         </tbody>
-        <p></p>
     </table>
-
+    <p></p>
 </body>
 <script>
     var connectionUrl = document.getElementById("connectionUrl");
-    var connectionButton = document.getElementById("connectionButton");
+    var connectButton = document.getElementById("connectButton");
     var stateLabel = document.getElementById("stateLabel");
     var sendMessage = document.getElementById("sendMessage");
     var sendButton = document.getElementById("sendButton");
     var commsLog = document.getElementById("commsLog");
     var closeButton = document.getElementById("closeButton");
-    var recipents = document.getElementById("recipents");
-    var connID = document.getElementById("connIDLable");
-
+    var recipients = document.getElementById("recipients");
+    var connID = document.getElementById("connIDLabel");
     connectionUrl.value = "ws://localhost:5000";
 
-    connectionButton.onclick = function () {
-        stateLabel.innerHTML = "attempting to connect...";
+    connectButton.onclick = function () {
+        stateLabel.innerHTML = "Attempting to connect...";
         socket = new WebSocket(connectionUrl.value);
         socket.onopen = function (event) {
             updateState();
             commsLog.innerHTML += '<tr>' +
-                '<td colspan="3"> Connection opened</td>' +
+                '<td colspan="3" class="commslog-data">Connection opened</td>' +
                 '</tr>';
         };
-
         socket.onclose = function (event) {
             updateState();
             commsLog.innerHTML += '<tr>' +
-                '<td colspan="3"> Connection closed. Code: ' + htmlEscape(event.code) +
-                'Reason: ' + htmlEscape(event.reason) + '</td>' +
+                '<td colspan="3" class="commslog-data">Connection closed. Code: ' + htmlEscape(event.code) + '. Reason: ' + htmlEscape(event.reason) + '</td>' +
                 '</tr>';
         };
-
-        socket.onerror = updateState();
+        socket.onerror = updateState;
         socket.onmessage = function (event) {
             commsLog.innerHTML += '<tr>' +
-                '<td>Server</td>' +
-                '<td>Client</td>' +
-                '<td>' + htmlEscape(event.data) + '</td></tr>';
+                '<td class="commslog-server">Server</td>' +
+                '<td class="commslog-client">Client</td>' +
+                '<td class="commslog-data">' + htmlEscape(event.data) + '</td></tr>';
         };
+
     };
 
     function htmlEscape(str) {
@@ -93,37 +85,41 @@
             .replace(/"/g, '&quot;')
             .replace(/'/g, '&#39;')
             .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
+            .replace(/>/g, '&gt;');
     }
 
     function updateState() {
         function disable() {
-            sendMessage.disable = true;
-            sendButton.disable = true;
-            closeButton.disable = true;
-            recipents.disable = true;
+            sendMessage.disabled = true;
+            sendButton.disabled = true;
+            closeButton.disabled = true;
+            recipients.disabled = true;
         }
         function enable() {
-            sendMessage.disable = false;
-            sendButton.disable = false;
-            closeButton.disable = false;
-            recipents.disable = false;
+            sendMessage.disabled = false;
+            sendButton.disabled = false;
+            closeButton.disabled = false;
+            recipients.disabled = false;
         }
-        connectionUrl.disable = true;
-        connectionButton.disable = true;
+        connectionUrl.disabled = true;
+        connectButton.disabled = true;
         if (!socket) {
             disable();
         } else {
-            switch (socket.readystate) {
+            switch (socket.readyState) {
                 case WebSocket.CLOSED:
                     stateLabel.innerHTML = "Closed";
-                    connID.innerHTML = "ConnId: N/a";
+                    connID.innerHTML = "ConnID: N/a";
                     disable();
-                    connectionUrl.disable = false;
-                    connectionButton.disable = false;
+                    connectionUrl.disabled = false;
+                    connectButton.disabled = false;
                     break;
                 case WebSocket.CLOSING:
                     stateLabel.innerHTML = "Closing...";
+                    disable();
+                    break;
+                case WebSocket.CONNECTING:
+                    stateLabel.innerHTML = "Connecting...";
                     disable();
                     break;
                 case WebSocket.OPEN:
@@ -131,11 +127,12 @@
                     enable();
                     break;
                 default:
-                    stateLabel.innerHTML = "Unknown Websocket State: " + htmlEscape(socket.readystate);
+                    stateLabel.innerHTML = "Unknown WebSocket State: " + htmlEscape(socket.readyState);
+                    disable();
+                    break;
             }
         }
     }
-
 </script>
 
 </html>
