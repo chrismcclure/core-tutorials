@@ -3,3 +3,6 @@
 ################################################################################
 
 /Commander/bin/Debug/netcoreapp3.1
+/Commander/obj
+/.vs
+/Commander/.vs/Commander
