@@ -6,3 +6,8 @@
 /Commander/obj
 /.vs
 /Commander/.vs/Commander
+/Websocket/WebSocterServer/WebSocterServer/obj/Debug/netcoreapp3.1
+/Websocket/WebSocterServer/.vs/WebSocterServer/v16
+/Websocket/WebSocterServer/WebSocterServer/obj
+/Websocket/WebSocterServer/.vs/WebSocterServer
+/Websocket/WebSocterServer/WebSocterServer/bin/Debug/netcoreapp3.1
