@@ -75,6 +75,7 @@
                 '<td class="commslog-server">Server</td>' +
                 '<td class="commslog-client">Client</td>' +
                 '<td class="commslog-data">' + htmlEscape(event.data) + '</td></tr>';
+                isConnID(event.data);
         };
 
     };
@@ -92,7 +93,7 @@
             alert("socket not connected");
         }
 
-        var data = sendMessage.value;
+        var data = constructJSONPayload();
         socket.send(data);
 
         commsLog.innerHTML += '<tr>' +
@@ -101,6 +102,11 @@
                 '<td class="commslog-data">' + htmlEscape(data) + '</td></tr>';
     };
 
+    function isConnID(str) {
+            if (str.substring(0, 7) == "ConnID:")
+                connID.innerHTML = "ConnID: " + str.substring(8, 45);
+        }
+
     function htmlEscape(str) {
         return str.toString()
             .replace(/&/g, '&amp;')
@@ -108,6 +114,14 @@
             .replace(/'/g, '&#39;')
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;');
+    }
+
+    function constructJSONPayload() {
+            return JSON.stringify({
+                "From": connID.innerHTML.substring(8, connID.innerHTML.length),
+                "To": recipients.value,
+                "Message": sendMessage.value
+            });
     }
 
     function updateState() {
