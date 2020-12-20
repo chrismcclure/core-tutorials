@@ -1,0 +1,17 @@
+﻿Taking some notes along the way
+
+1) When you run docker commands, make sure you are in the directory with the docker file.  While that seems silly, it's easy to mess up
+2) docker build -t weatherapi .   TODO a build with docker
+3) docker run weatherapi  TO run the container
+4) docker run -p 8080:80 weatherapi  TO exposed port 8080 and map to 80 inside the container
+5) docker ps  TO get running container
+6) docker container prune  To remove all the containers
+
+
+User Secrets
+1) Make sure the csporj has something like this:     <UserSecretsId>7a387871-7cfb-450b-ae78-cce3b836b68f</UserSecretsId>
+1) dotnet user-secrets set "Kestrel:Certificates:Development:Password" "Penlink123"  How to do secrets
+
+
+1) dotnet dev-certs https -ep $env:USERPROFILE\.aspnet\https\WeatherApi.pfx -p Penlink123    To create a dev certificate with a password:
+2) dotnet dev-certs https --trust   TO trust the cert
